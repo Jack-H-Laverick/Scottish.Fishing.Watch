@@ -4,18 +4,18 @@
 \alias{get_cropped_fishing}
 \title{Import Fishing Effort Within Specified Areas}
 \usage{
-get_cropped_fishing(file, area)
+get_cropped_fishing(file, area, box)
 }
 \arguments{
 \item{file}{The full name to a .csv file containing Global Fishing Watch data.}
 
 \item{area}{A Simple Feature object representing the areas to return fishing activity in.}
+
+\item{box}{A 4 number vector of min and max longitude, min and max latitude in that order.}
 }
 \value{
-A dataframe of cells from a 0.01 degree grid which contain fishing activity,
-labelled by the FAO region they fall in.
+A dataframe of cells from a 0.01 degree grid which contains fishing activity,
 }
 \description{
 Import Fishing Effort Within Specified Areas
 }
-\concept{Global Fishing Watch functions}

@@ -70,8 +70,6 @@ The next steps are for you to assign each date to a week column and then aggrega
 ```{Aggregating}
 Scottish_fishing <- readRDS("./Scottish_fishing.rds") %>%    # Import the cropped data, change the "." to the file path
   ## mutate(Week = date and some magic to label the week in the year)
-  rename(long = lon_bin, lat = lat_bin) %>%                  # Rename spatial variables
-  mutate(long = long / 100, lat = lat / 100) %>%             # Rescale to degrees
   group_by(long, lat, Year, Week, flag, geartype) %>%        # Group by pixel, year, week, flag, and gear
   summarise(fishing = sum(fishing_hours)) %>%                # Sum the fishing activity within each group 
   ungroup()            
