@@ -1,0 +1,14 @@
+Package: Scottish.Fishing.Watch
+Title: Tools For Inspecting Global Fishing Watch Data In Scottish Waters
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Jack H",
+           family = "Laverick",
+           role = c("aut", "cre"),
+           email = "jacklaverick@ymail.com",
+           comment = c(ORCID = "0000-0001-8829-2084"))
+Description: This package can be used to clip Global Fishing Watch data to Scottish waters.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+
