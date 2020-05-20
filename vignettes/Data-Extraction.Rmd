@@ -1,0 +1,81 @@
+---
+title: "Data-Extraction"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Data-Extraction}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = FALSE
+)
+```
+
+Hi Melinda!
+
+First things first download the Daily GLobal Fishing Watch data and extract the files:
+
+https://globalfishingwatch.org/data-download/datasets/public-fisshing-effort-100:v20200316
+
+The code below will process the Global Fishing Watch data to get us a Scotland specific data product. Feel free to either copy the chunks of R code into a script, or just try and run them from here. Let's load some packages:
+
+```{r packages}
+packages <- c("tidyverse", "furrr", "tictoc", "Scottish.Fishing.Watch") # List packages
+lapply(c(packages), library, character.only = TRUE)                     # Load packages
+
+```
+
+Then there is some additional set up. To speed things up we'll run the data extraction of each csv file in parallel. We need to specify how the jobs are distributed across cores. We do that with `plan()`. Then replace "____" with the full path to the folder you've got the daily csv files in.
+
+```{r set up}
+plan(multiprocess)                                                      # Choose the method to parallelise by with furrr
+
+directory <- "____"
+
+```
+
+We need to get a list of file names to process. The file names contain the date of the csv file. I separate the path to each file at a "/" in the code below to extract the date. Depending on where you've save the csv files on your machine you may need to change the number of NAs in the vector below to leave just the date part of the character string.
+
+```{r get files}
+Files <- data.frame(File = list.files(path = directory,                 # Get a list of files to import 
+                                      pattern ="*.csv", full.names = T)) %>% 
+  separate(File, into = c(NA,NA,NA, "Date"), sep = "/", remove = F) %>% # Pull the date from the file name
+  separate(Date, into = c("Year", "Month","Day"), sep = "-") %>%        # Get time columns for grouping time steps
+  mutate(Day = str_replace(Day, ".csv", "")) %>%                        # Remove the file extension from the last column
+  filter(Year > 2014)                                                   # If you want to drop old files now for speed you could do it here.
+
+```
+
+Now we get to crop. I've written a function as part of the package called `get_cropped_fishing`. This could take about 30 minutes if you're running over all the data in the download.
+
+```{r cropping}
+tic()                                               # Start timing the operation
+
+Scottish_fishing <- future_map_dfr(Files$File,      # For each file (in parallel) (and appending results into a single dataframe)
+       get_cropped_fishing,                         # Use my function 
+       area = Scot_EEZ,                             # To Clip to Scottish waters
+       .progress= T) %>%                            # Show a progress bar
+saveRDS(file = "./Scottish_fishing.rds")            # Save the data, replace the "." with the path to where you want to save to
+
+toc()                                               # Stop timing the operation
+
+```
+
+The next steps are for you to assign each date to a week column and then aggregate fishing activity. I've put down what you roughly need below, the missing piece is labelling the weeks.
+
+```{Aggregating}
+Scottish_fishing <- readRDS("./Scottish_fishing.rds") %>%    # Import the cropped data, change the "." to the file path
+  ## mutate(Week = date and some magic to label the week in the year)
+  rename(long = lon_bin, lat = lat_bin) %>%                  # Rename spatial variables
+  mutate(long = long / 100, lat = lat / 100) %>%             # Rescale to degrees
+  group_by(long, lat, Year, Week, flag, geartype) %>%        # Group by pixel, year, week, flag, and gear
+  summarise(fishing = sum(fishing_hours)) %>%                # Sum the fishing activity within each group 
+  ungroup()            
+
+```
+
+Then feel free to get plotting! If you want to aggregate the data further (only investigate by flag not flag and gear say) then repeat the `group_by`, `summarise`, `ungroup` sequence.
