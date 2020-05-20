@@ -16,8 +16,8 @@ get_cropped_fishing <- function (file, area, box) {
 
   Fish <- utils::read.csv(file, header = TRUE) %>%                           # Take first csv file as a test
     dplyr::mutate(Longitude = lon_bin/100, Latitude = lat_bin/100) %>%       # Move Coordinate columns, and divide by 100 because raw data misses decimal point
-    filter(between(Longitude, box[1], box[2]), 
-           between(Latitude, box[3], box[4])) %>%                            # Perform a rough crop before sf clipping 
+    dplyr::filter(dplyr::between(Longitude, box[1], box[2]), 
+                  dplyr::between(Latitude, box[3], box[4])) %>%              # Perform a rough crop before sf clipping 
     sf::st_as_sf(coords = c("Longitude", "Latitude"), crs = 4326, remove = TRUE) %>%
     sf::st_join(area) %>%
     tidyr::drop_na()
