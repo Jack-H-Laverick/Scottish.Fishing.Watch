@@ -56,8 +56,7 @@ Now we get to crop. I've written a function as part of the package called `get_c
 tic()                                               # Start timing the operation
 
 Scottish_fishing <- future_map_dfr(Files$File,      # For each file (in parallel) (and appending results into a single dataframe)
-       get_cropped_fishing,                         # Use my function 
-       area = Scot_EEZ,                             # To Clip to Scottish waters
+       get_cropped_fishing,                         # Use my function set to defaults
        .progress= T) %>%                            # Show a progress bar
 saveRDS(file = "./Scottish_fishing.rds")            # Save the data, replace the "." with the path to where you want to save to
 
@@ -70,7 +69,7 @@ The next steps are for you to assign each date to a week column and then aggrega
 ```{Aggregating}
 Scottish_fishing <- readRDS("./Scottish_fishing.rds") %>%    # Import the cropped data, change the "." to the file path
   ## mutate(Week = date and some magic to label the week in the year)
-  group_by(long, lat, Year, Week, flag, geartype) %>%        # Group by pixel, year, week, flag, and gear
+  group_by(long, lat, Year, Week, flag, geartype, Name, Region) %>% # Group by all variables we want to keep
   summarise(fishing = sum(fishing_hours)) %>%                # Sum the fishing activity within each group 
   ungroup()            
 
