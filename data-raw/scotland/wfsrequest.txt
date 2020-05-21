@@ -1,0 +1,1 @@
+http://msmap1.atkinsgeospatial.com:80/geoserver/nmpwfs/ows?token=d46ffd2a-e192-4e51-8a6a-b3292c20f1ee?token=d46ffd2a-e192-4e51-8a6a-b3292c20f1ee&service=wfs&request=getFeature&typeName=nmpwfs:area_management_scottish_assessment_areas_marine_regions&outputFormat=shape-zip&srsName=EPSG:4326
