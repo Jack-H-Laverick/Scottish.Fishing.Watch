@@ -23,6 +23,12 @@ Score_fishing <- function(x, y, map) {
   
   blanked_image <- map[,,1,1]                 # Select only the first level from a colour image (Make black and white)
   
+  if (dim(blanked_image) != dim(out_matrix)) { # If the picture doesn't match the mask in size
+    
+    out_matrix <- outmatrix[1:nrow(blanked_image), 1:ncol(blanked_image)] # Shrink the mask
+
+  usethis::ui_warn("Shrinking mask to match image dimensions")   # Tell the user      
+  }
   blanked_image[out_matrix] <- 0              # Colour black points outside our area
   Inside_area <- mean(blanked_image)          # Store the proportion of image area we didn't blank 
   
