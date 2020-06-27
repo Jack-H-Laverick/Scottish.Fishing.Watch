@@ -23,7 +23,7 @@ Score_fishing <- function(x, y, map) {
   
   blanked_image <- map[,,1,1]                 # Select only the first level from a colour image (Make black and white)
   
-  if (dim(blanked_image) != dim(out_matrix)) { # If the picture doesn't match the mask in size
+  if(identical(dim(blanked_image), dim(out_matrix)) == FALSE) { # If the picture doesn't match the mask in size
     
     out_matrix <- outmatrix[1:nrow(blanked_image), 1:ncol(blanked_image)] # Shrink the mask
 
