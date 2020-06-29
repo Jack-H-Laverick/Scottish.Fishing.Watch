@@ -25,7 +25,7 @@ Score_fishing <- function(x, y, map) {
   
   if(identical(dim(blanked_image), dim(out_matrix)) == FALSE) { # If the picture doesn't match the mask in size
     
-    out_matrix <- outmatrix[1:nrow(blanked_image), 1:ncol(blanked_image)] # Shrink the mask
+    out_matrix <- out_matrix[1:nrow(blanked_image), 1:ncol(blanked_image)] # Shrink the mask
 
   usethis::ui_warn("Shrinking mask to match image dimensions")   # Tell the user      
   }
